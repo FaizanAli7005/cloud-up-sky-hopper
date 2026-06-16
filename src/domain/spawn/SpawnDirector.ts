@@ -9,7 +9,7 @@ export interface SpawnDirector {
 }
 
 export class SkyHopperSpawnDirector implements SpawnDirector {
-  private nextSpawnIn = 1.1;
+  private nextSpawnIn = 1.45;
   private serial = 0;
 
   constructor(
@@ -39,10 +39,10 @@ export class SkyHopperSpawnDirector implements SpawnDirector {
 
   private createHazard(): MovingHazard {
     const variant = this.random.pick([
-      { type: "bird" as const, width: 64, height: 42 },
-      { type: "storm" as const, width: 70, height: 68 },
-      { type: "windmill" as const, width: 76, height: 76 },
-      { type: "balloon" as const, width: 52, height: 84 }
+      { type: "bird" as const, width: 78, height: 46 },
+      { type: "storm" as const, width: 84, height: 74 },
+      { type: "windmill" as const, width: 68, height: 92 },
+      { type: "balloon" as const, width: 58, height: 88 }
     ]);
 
     return new MovingHazard(

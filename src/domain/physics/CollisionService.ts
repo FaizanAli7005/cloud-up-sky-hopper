@@ -6,7 +6,7 @@ export interface CollisionService {
 
 export class AxisAlignedCollisionService implements CollisionService {
   overlaps(a: Bounds, b: Bounds): boolean {
-    const padding = 14;
+    const padding = 34;
 
     return (
       a.x + padding < b.x + b.width - padding &&

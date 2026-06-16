@@ -151,31 +151,35 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createBackdrop(): void {
-    this.add.rectangle(480, 270, 960, 540, 0x99d8ff);
-    this.add.rectangle(480, 134, 960, 268, 0xc7ecff).setAlpha(0.64);
-    this.add.rectangle(480, 456, 960, 168, 0x8dc8f8).setAlpha(0.42);
-    this.add.circle(790, 86, 54, 0xfff0a8).setAlpha(0.96);
+    this.add.rectangle(640, 270, 1280, 540, 0x99d8ff);
+    this.add.rectangle(640, 134, 1280, 268, 0xc7ecff).setAlpha(0.64);
+    this.add.rectangle(640, 456, 1280, 168, 0x8dc8f8).setAlpha(0.42);
+    this.add.circle(1090, 86, 54, 0xfff0a8).setAlpha(0.96);
 
     for (const cloud of [
       { x: 122, y: 96, s: 0.8, a: 0.66 },
       { x: 360, y: 148, s: 1.1, a: 0.72 },
       { x: 650, y: 82, s: 0.7, a: 0.62 },
-      { x: 850, y: 172, s: 1.0, a: 0.68 },
+      { x: 930, y: 172, s: 1.0, a: 0.68 },
+      { x: 1160, y: 120, s: 0.78, a: 0.58 },
       { x: 210, y: 382, s: 1.3, a: 0.46 },
-      { x: 740, y: 438, s: 1.05, a: 0.5 }
+      { x: 830, y: 438, s: 1.05, a: 0.5 },
+      { x: 1120, y: 382, s: 1.2, a: 0.42 }
     ]) {
       this.backgroundClouds.push(this.drawCloud(cloud.x, cloud.y, cloud.s, 0xffffff, cloud.a));
     }
 
-    this.add.rectangle(480, 500, 960, 80, 0x355f86).setAlpha(0.68);
-    this.add.rectangle(480, 484, 960, 8, 0x203a56).setAlpha(0.42);
+    this.add.rectangle(640, 500, 1280, 80, 0x355f86).setAlpha(0.68);
+    this.add.rectangle(640, 484, 1280, 8, 0x203a56).setAlpha(0.42);
     for (const wave of [
       { x: 80, y: 507, s: 1.0 },
       { x: 220, y: 526, s: 0.8 },
       { x: 380, y: 512, s: 1.1 },
       { x: 560, y: 528, s: 0.9 },
       { x: 740, y: 508, s: 1.0 },
-      { x: 900, y: 524, s: 0.85 }
+      { x: 920, y: 524, s: 0.85 },
+      { x: 1080, y: 510, s: 1.05 },
+      { x: 1220, y: 528, s: 0.78 }
     ]) {
       this.drawCloud(wave.x, wave.y, wave.s, 0x203a56, 0.2);
     }
@@ -217,7 +221,7 @@ export class GameScene extends Phaser.Scene {
       color: "#29465e"
     });
     this.statusText = this.add
-      .text(480, 44, "CLOUD UP", {
+      .text(640, 44, "CLOUD UP", {
         ...textStyle,
         fontSize: "22px",
         fontStyle: "800",
@@ -225,7 +229,7 @@ export class GameScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
     this.helpButton = this.add
-      .text(858, 24, "HELP", {
+      .text(1174, 24, "HELP", {
         ...textStyle,
         fontSize: "16px",
         fontStyle: "800",
@@ -240,30 +244,30 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createOverlay(): void {
-    this.overlay = this.add.container(480, 270);
+    this.overlay = this.add.container(640, 270);
     this.overlay.setDepth(1000);
-    this.overlay.add(this.add.rectangle(0, 0, 560, 330, 0xf7fbff, 0.96).setStrokeStyle(1, 0x86bdd8, 0.72));
+    this.overlay.add(this.add.rectangle(0, 0, 640, 360, 0xf7fbff, 0.96).setStrokeStyle(1, 0x86bdd8, 0.72));
     this.overlayTitle = this.add
-      .text(0, -118, "CLOUD UP", {
+      .text(0, -142, "CLOUD UP", {
         fontFamily: "Inter, system-ui, sans-serif",
-        fontSize: "27px",
+        fontSize: "30px",
         fontStyle: "800",
         color: "#102033",
         align: "center"
       })
       .setOrigin(0.5);
     this.overlayHelpText = this.add
-      .text(0, -24, "", {
+      .text(0, -98, "", {
         fontFamily: "Inter, system-ui, sans-serif",
         fontSize: "14px",
         color: "#20384d",
         align: "center",
-        lineSpacing: 5,
-        wordWrap: { width: 470, useAdvancedWrap: true }
+        lineSpacing: 7,
+        wordWrap: { width: 540, useAdvancedWrap: true }
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0);
     this.overlayAction = this.add
-      .text(0, 116, "START", {
+      .text(0, 132, "START", {
         fontFamily: "Inter, system-ui, sans-serif",
         fontSize: "18px",
         fontStyle: "700",
@@ -371,7 +375,7 @@ export class GameScene extends Phaser.Scene {
       }
 
       sprite.setPosition(obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height / 2);
-      sprite.setScale(obstacle.width / 70, obstacle.height / 68);
+      sprite.setScale(this.getObstacleScale(obstacle));
     });
 
     this.removeHiddenSprites(this.obstacleSprites, visibleIds);
@@ -426,44 +430,65 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  private getObstacleScale(obstacle: ObstacleSnapshot): number {
+    switch (obstacle.type) {
+      case "bird":
+        return obstacle.width / 120;
+      case "windmill":
+        return obstacle.height / 132;
+      case "balloon":
+        return obstacle.height / 108;
+      case "storm":
+      default:
+        return obstacle.width / 82;
+    }
+  }
+
   private createBirdSprite(): Phaser.GameObjects.Container {
     const sprite = this.add.container(0, 0);
-    sprite.add(this.add.ellipse(4, 2, 42, 22, 0x26384f));
-    sprite.add(this.add.triangle(-14, 2, -12, 0, -54, -24, -36, 16, 0x6f86a2));
-    sprite.add(this.add.triangle(20, 2, 18, 0, 58, -20, 38, 16, 0x6f86a2));
-    sprite.add(this.add.triangle(29, -2, 29, -8, 48, -2, 29, 5, 0xffd166));
-    sprite.add(this.add.circle(17, -5, 4, 0xf7fbff));
-    sprite.add(this.add.circle(18, -5, 2, 0x102033));
+    sprite.add(this.add.ellipse(4, 4, 46, 24, 0x26384f));
+    sprite.add(this.add.triangle(-16, 4, -16, 2, -58, -26, -38, 18, 0x7089a8));
+    sprite.add(this.add.triangle(20, 4, 20, 2, 62, -22, 40, 18, 0x7089a8));
+    sprite.add(this.add.triangle(30, -1, 30, -8, 52, -1, 30, 7, 0xffd166));
+    sprite.add(this.add.circle(18, -5, 5, 0xf7fbff));
+    sprite.add(this.add.circle(19, -5, 2, 0x102033));
+    sprite.add(this.add.ellipse(-2, 9, 20, 7, 0x102033).setAlpha(0.28));
     return sprite;
   }
 
   private createStormSprite(): Phaser.GameObjects.Container {
     const sprite = this.add.container(0, 0);
-    sprite.add(this.add.ellipse(-12, -7, 54, 36, 0x26384f));
-    sprite.add(this.add.ellipse(16, -4, 50, 36, 0x596a86));
-    sprite.add(this.add.ellipse(2, 9, 70, 30, 0x35485f));
-    sprite.add(this.add.triangle(-8, 43, -18, 8, 6, 8, -8, 43, 0xffd54f));
-    sprite.add(this.add.triangle(10, 34, 0, 8, 18, 8, 6, 36, 0xffee83).setAlpha(0.9));
+    sprite.add(this.add.ellipse(-16, -7, 58, 38, 0x27364c));
+    sprite.add(this.add.ellipse(18, -5, 54, 38, 0x596a86));
+    sprite.add(this.add.ellipse(2, 10, 82, 32, 0x34475e));
+    sprite.add(this.add.rectangle(1, 20, 70, 10, 0x34475e));
+    sprite.add(this.add.triangle(-12, 50, -24, 8, 4, 8, -12, 50, 0xffd54f));
+    sprite.add(this.add.triangle(12, 40, 0, 8, 22, 8, 8, 42, 0xffee83).setAlpha(0.92));
+    sprite.add(this.add.circle(-26, 30, 3, 0x87c9ff).setAlpha(0.9));
+    sprite.add(this.add.circle(30, 31, 3, 0x87c9ff).setAlpha(0.9));
     return sprite;
   }
 
   private createWindmillSprite(): Phaser.GameObjects.Container {
     const sprite = this.add.container(0, 0);
-    sprite.add(this.add.rectangle(0, 22, 12, 58, 0x8e725e).setStrokeStyle(2, 0x533f35));
-    sprite.add(this.add.circle(0, -8, 9, 0x31566b));
-    sprite.add(this.add.triangle(0, -8, 0, -8, -48, -20, -12, 0, 0xf7fbff).setStrokeStyle(1, 0x31566b));
-    sprite.add(this.add.triangle(0, -8, 0, -8, 48, -20, 12, 0, 0xf7fbff).setStrokeStyle(1, 0x31566b));
-    sprite.add(this.add.triangle(0, -8, 0, -8, -10, 38, 10, 8, 0xf7fbff).setStrokeStyle(1, 0x31566b));
+    sprite.add(this.add.rectangle(0, 24, 14, 62, 0x8e725e).setStrokeStyle(2, 0x533f35));
+    sprite.add(this.add.rectangle(0, 58, 26, 10, 0x6d4a2d));
+    sprite.add(this.add.circle(0, -12, 10, 0x31566b));
+    sprite.add(this.add.triangle(0, -12, -4, -15, -58, -28, -16, -4, 0xf7fbff).setStrokeStyle(1, 0x31566b));
+    sprite.add(this.add.triangle(0, -12, 4, -15, 58, -28, 16, -4, 0xf7fbff).setStrokeStyle(1, 0x31566b));
+    sprite.add(this.add.triangle(0, -12, -4, -8, -14, 44, 10, 8, 0xf7fbff).setStrokeStyle(1, 0x31566b));
+    sprite.add(this.add.triangle(0, -12, 4, -8, 14, -68, -10, -32, 0xf7fbff).setStrokeStyle(1, 0x31566b));
     return sprite;
   }
 
   private createBalloonSprite(): Phaser.GameObjects.Container {
     const sprite = this.add.container(0, 0);
-    sprite.add(this.add.ellipse(0, -12, 48, 60, 0xff6b6b).setStrokeStyle(2, 0x9d3d3d));
-    sprite.add(this.add.line(0, -18, 0, -38, 0, 14, 0xffffff).setLineWidth(2).setAlpha(0.5));
-    sprite.add(this.add.line(0, 16, -12, 0, -4, 36, 0x3a5368).setLineWidth(2));
-    sprite.add(this.add.line(0, 16, 12, 0, 4, 36, 0x3a5368).setLineWidth(2));
-    sprite.add(this.add.rectangle(0, 36, 20, 14, 0xb98b4f).setStrokeStyle(1, 0x6d4a2d));
+    sprite.add(this.add.ellipse(0, -18, 52, 66, 0xff6b6b).setStrokeStyle(2, 0x9d3d3d));
+    sprite.add(this.add.ellipse(-10, -28, 12, 42, 0xff8d8d).setAlpha(0.62));
+    sprite.add(this.add.line(0, 14, -14, 0, -6, 38, 0x3a5368).setLineWidth(2));
+    sprite.add(this.add.line(0, 14, 14, 0, 6, 38, 0x3a5368).setLineWidth(2));
+    sprite.add(this.add.rectangle(0, 40, 22, 16, 0xb98b4f).setStrokeStyle(1, 0x6d4a2d));
+    sprite.add(this.add.rectangle(0, 30, 34, 6, 0xf5c06a).setStrokeStyle(1, 0x6d4a2d));
     return sprite;
   }
 

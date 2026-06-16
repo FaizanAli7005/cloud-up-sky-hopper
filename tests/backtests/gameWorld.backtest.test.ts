@@ -21,15 +21,24 @@ function createDeterministicWorld(seed: number): GameWorld {
 }
 
 function autopilot(snapshot: GameSnapshot) {
-  const threat = snapshot.obstacles
-    .filter((obstacle) => obstacle.y > -180 && obstacle.y < snapshot.player.y + snapshot.player.height)
-    .sort((a, b) => b.y - a.y)[0];
+  const threats = snapshot.obstacles.filter(
+    (obstacle) => obstacle.y > -240 && obstacle.y < snapshot.player.y + snapshot.player.height + 180
+  );
 
   let targetX = GAME_BALANCE.worldWidth * 0.5;
 
-  if (threat) {
-    const threatCenter = threat.x + threat.width / 2;
-    targetX = threatCenter < GAME_BALANCE.worldWidth * 0.5 ? GAME_BALANCE.worldWidth - 130 : 52;
+  if (threats.length > 0) {
+    const lanes = [70, 220, 370, 520, 670, 820, 970, 1120];
+    targetX = lanes
+      .map((lane) => {
+        const nearestThreat = threats.reduce((nearest, obstacle) => {
+          const obstacleCenter = obstacle.x + obstacle.width / 2;
+          const verticalPressure = 1 + Math.max(0, obstacle.y + obstacle.height) / GAME_BALANCE.worldHeight;
+          return Math.min(nearest, Math.abs(lane - obstacleCenter) / verticalPressure);
+        }, Number.POSITIVE_INFINITY);
+        return { lane, nearestThreat };
+      })
+      .sort((a, b) => b.nearestThreat - a.nearestThreat)[0].lane;
   }
 
   const leftHeld = snapshot.player.x > targetX + 18;

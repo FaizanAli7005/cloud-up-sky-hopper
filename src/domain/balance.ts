@@ -1,5 +1,5 @@
 export const GAME_BALANCE = {
-  worldWidth: 960,
+  worldWidth: 1280,
   worldHeight: 540,
   skyTop: 36,
   skyBottom: 492,
@@ -7,19 +7,19 @@ export const GAME_BALANCE = {
   boostAcceleration: -1050,
   maxRiseVelocity: -470,
   maxFallVelocity: 360,
-  playerStartX: 220,
+  playerStartX: 300,
   playerStartY: 180,
   playerHorizontalSpeed: 520,
   playerWidth: 78,
   playerHeight: 58,
-  baseSpeed: 155,
-  maxSpeed: 380,
-  speedRampPerSecond: 2.8,
+  baseSpeed: 145,
+  maxSpeed: 350,
+  speedRampPerSecond: 2.4,
   scorePerSecond: 12,
   starBonus: 125,
   boostBonus: 300,
   spawnY: -96,
   despawnY: 640,
-  minimumSpawnGap: 1.35,
-  maximumSpawnGap: 2.25
+  minimumSpawnGap: 1.7,
+  maximumSpawnGap: 2.75
 } as const;

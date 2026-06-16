@@ -30,7 +30,7 @@ body {
 #app {
   display: grid;
   place-items: center;
-  padding: 12px;
+  padding: 0;
   background:
     radial-gradient(circle at 16% 18%, rgba(255, 255, 255, 0.9), transparent 18%),
     radial-gradient(circle at 82% 12%, rgba(255, 255, 255, 0.7), transparent 16%),
@@ -38,8 +38,9 @@ body {
 }
 
 #game-shell {
-  width: min(calc(100vw - 24px), calc((100vh - 24px) * 16 / 9));
-  aspect-ratio: 16 / 9;
+  width: 100vw;
+  max-height: 100vh;
+  aspect-ratio: 1280 / 540;
   display: grid;
   place-items: center;
 }
