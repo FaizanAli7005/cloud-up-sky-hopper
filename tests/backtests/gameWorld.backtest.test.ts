@@ -22,28 +22,36 @@ function createDeterministicWorld(seed: number): GameWorld {
 
 function autopilot(snapshot: GameSnapshot) {
   const threats = snapshot.obstacles.filter(
-    (obstacle) => obstacle.y > -240 && obstacle.y < snapshot.player.y + snapshot.player.height + 180
+    (obstacle) => obstacle.y > -260 && obstacle.y < snapshot.player.y + snapshot.player.height + 220
   );
 
-  let targetX = GAME_BALANCE.worldWidth * 0.5;
+  let targetX = GAME_BALANCE.worldWidth * 0.5 - snapshot.player.width / 2;
 
   if (threats.length > 0) {
-    const lanes = [70, 220, 370, 520, 670, 820, 970, 1120];
+    const lanes = [46, 176, 306, 436, 566, 696, 826, 956, 1086, 1216 - snapshot.player.width];
+    const playerCenterY = snapshot.player.y + snapshot.player.height / 2;
     targetX = lanes
       .map((lane) => {
-        const nearestThreat = threats.reduce((nearest, obstacle) => {
-          const obstacleCenter = obstacle.x + obstacle.width / 2;
-          const verticalPressure = 1 + Math.max(0, obstacle.y + obstacle.height) / GAME_BALANCE.worldHeight;
-          return Math.min(nearest, Math.abs(lane - obstacleCenter) / verticalPressure);
-        }, Number.POSITIVE_INFINITY);
-        return { lane, nearestThreat };
+        const laneRisk = threats.reduce((risk, obstacle) => {
+          const horizontalOverlap = Math.max(
+            0,
+            Math.min(lane + snapshot.player.width + 18, obstacle.x + obstacle.width) -
+              Math.max(lane - 18, obstacle.x)
+          );
+          const obstacleCenterY = obstacle.y + obstacle.height / 2;
+          const verticalPressure = 1 / Math.max(38, Math.abs(obstacleCenterY - playerCenterY));
+          return risk + horizontalOverlap * verticalPressure;
+        }, Math.abs(lane - snapshot.player.x) * 0.002);
+        return { lane, laneRisk };
       })
-      .sort((a, b) => b.nearestThreat - a.nearestThreat)[0].lane;
+      .sort((a, b) => a.laneRisk - b.laneRisk)[0].lane;
   }
 
   const leftHeld = snapshot.player.x > targetX + 18;
   const rightHeld = snapshot.player.x < targetX - 18;
-  const targetY = 282;
+  const targetY = threats.some((obstacle) => obstacle.y > snapshot.player.y - 90 && obstacle.y < snapshot.player.y + 130)
+    ? 238
+    : 282;
   const boostHeld = snapshot.player.y > targetY || snapshot.player.velocityY > 110;
 
   return { leftHeld, rightHeld, boostHeld };
@@ -80,6 +88,24 @@ describe("Cloud Up Sky Hopper deterministic backtests", () => {
 
     expect(snapshot.isGameOver).toBe(true);
     expect(snapshot.elapsedSeconds).toBeGreaterThan(1);
+  });
+
+  it("detects contact with small visible hazards", () => {
+    const collisions = new AxisAlignedCollisionService();
+
+    expect(
+      collisions.overlaps(
+        { x: 100, y: 100, width: GAME_BALANCE.playerWidth, height: GAME_BALANCE.playerHeight },
+        { x: 132, y: 116, width: 78, height: 46 }
+      )
+    ).toBe(true);
+
+    expect(
+      collisions.overlaps(
+        { x: 100, y: 100, width: GAME_BALANCE.playerWidth, height: GAME_BALANCE.playerHeight },
+        { x: 220, y: 116, width: 78, height: 46 }
+      )
+    ).toBe(false);
   });
 
   it("uses a monotonic difficulty curve capped by the balance maximum", () => {

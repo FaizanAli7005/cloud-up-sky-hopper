@@ -6,13 +6,18 @@ export interface CollisionService {
 
 export class AxisAlignedCollisionService implements CollisionService {
   overlaps(a: Bounds, b: Bounds): boolean {
-    const padding = 34;
+    const insetA = this.getHitboxInset(a);
+    const insetB = this.getHitboxInset(b);
 
     return (
-      a.x + padding < b.x + b.width - padding &&
-      a.x + a.width - padding > b.x + padding &&
-      a.y + padding < b.y + b.height - padding &&
-      a.y + a.height - padding > b.y + padding
+      a.x + insetA < b.x + b.width - insetB &&
+      a.x + a.width - insetA > b.x + insetB &&
+      a.y + insetA < b.y + b.height - insetB &&
+      a.y + a.height - insetA > b.y + insetB
     );
+  }
+
+  private getHitboxInset(bounds: Bounds): number {
+    return Math.min(16, bounds.width * 0.22, bounds.height * 0.22);
   }
 }
