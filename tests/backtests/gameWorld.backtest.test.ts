@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { GAME_BALANCE } from "../../src/domain/balance";
 import { LinearDifficultyCurve } from "../../src/domain/difficulty/DifficultyCurve";
+import { MovingHazard } from "../../src/domain/entities/MovingHazard";
 import { AxisAlignedCollisionService } from "../../src/domain/physics/CollisionService";
 import { SeededRandom } from "../../src/domain/random/SeededRandom";
 import { SkyHopperSpawnDirector } from "../../src/domain/spawn/SpawnDirector";
@@ -106,6 +107,28 @@ describe("Cloud Up Sky Hopper deterministic backtests", () => {
         { x: 220, y: 116, width: 78, height: 46 }
       )
     ).toBe(false);
+  });
+
+  it("ends the run when a spawned hazard touches the player", () => {
+    const difficulty = new LinearDifficultyCurve();
+    const spawnDirector = {
+      update: () => [
+        new MovingHazard(
+          "forced-hit",
+          "bird",
+          GAME_BALANCE.playerStartX + 12,
+          GAME_BALANCE.playerStartY + 8,
+          78,
+          46,
+          () => 0
+        )
+      ]
+    };
+    const world = new GameWorld(difficulty, new AxisAlignedCollisionService(), spawnDirector);
+
+    const snapshot = world.update(1 / 60, { leftHeld: false, rightHeld: false, boostHeld: false });
+
+    expect(snapshot.isGameOver).toBe(true);
   });
 
   it("uses a monotonic difficulty curve capped by the balance maximum", () => {
