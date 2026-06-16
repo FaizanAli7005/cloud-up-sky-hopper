@@ -6,7 +6,7 @@ import { MovingHazard } from "../entities/MovingHazard";
 import { CollisionService } from "../physics/CollisionService";
 import { HighScoreProvider, ScoreKeeper } from "../scoring/ScoreKeeper";
 import { SpawnDirector } from "../spawn/SpawnDirector";
-import { GameInput, GameSnapshot } from "../types";
+import { Bounds, GameInput, GameSnapshot } from "../types";
 
 export class GameWorld {
   private readonly player = new CloudPlayer();
@@ -71,7 +71,9 @@ export class GameWorld {
       })),
       score: this.scoreKeeper.score,
       highScore: this.scoreKeeper.highScore,
+      currentCombo: this.scoreKeeper.currentCombo,
       bestCombo: this.scoreKeeper.bestCombo,
+      bonusTimeRemaining: this.scoreKeeper.bonusTimeRemaining,
       speed: this.difficultyCurve.getSpeed(this.elapsedSeconds),
       elapsedSeconds: this.elapsedSeconds,
       isGameOver: this.gameOver
@@ -88,7 +90,7 @@ export class GameWorld {
     }
 
     this.collectibles = this.collectibles.filter((collectible) => {
-      if (this.collisionService.overlaps(playerBounds, collectible.getBounds())) {
+      if (this.canCollect(playerBounds, collectible.getBounds())) {
         if (collectible.collectibleType === "boost") {
           this.scoreKeeper.addBoostBonus();
         } else {
@@ -99,6 +101,18 @@ export class GameWorld {
 
       return true;
     });
+  }
+
+  private canCollect(playerBounds: Bounds, collectibleBounds: Bounds): boolean {
+    const playerCenterX = playerBounds.x + playerBounds.width / 2;
+    const playerCenterY = playerBounds.y + playerBounds.height / 2;
+    const collectibleCenterX = collectibleBounds.x + collectibleBounds.width / 2;
+    const collectibleCenterY = collectibleBounds.y + collectibleBounds.height / 2;
+    const dx = playerCenterX - collectibleCenterX;
+    const dy = playerCenterY - collectibleCenterY;
+    const pickupRadius = Math.max(playerBounds.width, playerBounds.height) * 0.46 + collectibleBounds.width * 0.68;
+
+    return dx * dx + dy * dy <= pickupRadius * pickupRadius;
   }
 
   private removeOffscreenEntities(): void {

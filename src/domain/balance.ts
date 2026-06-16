@@ -18,6 +18,7 @@ export const GAME_BALANCE = {
   scorePerSecond: 12,
   starBonus: 125,
   boostBonus: 300,
+  bonusComboWindowSeconds: 4,
   spawnY: -96,
   despawnY: 640,
   minimumSpawnGap: 1.7,

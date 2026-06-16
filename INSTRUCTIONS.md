@@ -67,14 +67,13 @@ Keep the cloud airborne, avoid all hazards, and do not touch the storm floor at 
 
 - Bird
 - Storm cloud
-- Windmill
 - Balloon
 - Storm floor
 
 ## Scoring Tips
 
 - Survive longer to earn altitude score.
-- Collect stars for combo score.
+- Collect stars for timed combo score.
 - Collect teal boost gems for bigger bonus chains.
 - Avoid risky collectibles when hazards are close.
 - Stay around the upper-middle of the sky so you have room to recover.

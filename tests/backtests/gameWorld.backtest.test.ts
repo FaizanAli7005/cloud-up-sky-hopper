@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { GAME_BALANCE } from "../../src/domain/balance";
 import { LinearDifficultyCurve } from "../../src/domain/difficulty/DifficultyCurve";
+import { Collectible } from "../../src/domain/entities/Collectible";
 import { MovingHazard } from "../../src/domain/entities/MovingHazard";
 import { AxisAlignedCollisionService } from "../../src/domain/physics/CollisionService";
 import { SeededRandom } from "../../src/domain/random/SeededRandom";
@@ -129,6 +130,47 @@ describe("Cloud Up Sky Hopper deterministic backtests", () => {
     const snapshot = world.update(1 / 60, { leftHeld: false, rightHeld: false, boostHeld: false });
 
     expect(snapshot.isGameOver).toBe(true);
+  });
+
+  it("does not spawn windmills", () => {
+    const world = createDeterministicWorld(777);
+    let snapshot = world.getSnapshot();
+
+    for (let frame = 0; frame < 60 * 45; frame += 1) {
+      snapshot = world.update(1 / 60, autopilot(snapshot));
+      expect(snapshot.obstacles.every((obstacle) => String(obstacle.type) !== "windmill")).toBe(true);
+    }
+  });
+
+  it("collects nearby bonuses and exposes the active combo", () => {
+    const difficulty = new LinearDifficultyCurve();
+    let spawned = false;
+    const spawnDirector = {
+      update: () => {
+        if (spawned) {
+          return [];
+        }
+        spawned = true;
+        return [
+          new Collectible(
+            "near-star",
+            "star",
+            GAME_BALANCE.playerStartX + GAME_BALANCE.playerWidth - 4,
+            GAME_BALANCE.playerStartY + 8,
+            32,
+            () => 0
+          )
+        ];
+      }
+    };
+    const world = new GameWorld(difficulty, new AxisAlignedCollisionService(), spawnDirector);
+
+    const collected = world.update(1 / 60, { leftHeld: false, rightHeld: false, boostHeld: false });
+
+    expect(collected.collectibles).toHaveLength(0);
+    expect(collected.currentCombo).toBe(1);
+    expect(collected.bonusTimeRemaining).toBe(GAME_BALANCE.bonusComboWindowSeconds);
+    expect(collected.score).toBeGreaterThanOrEqual(GAME_BALANCE.starBonus);
   });
 
   it("uses a monotonic difficulty curve capped by the balance maximum", () => {

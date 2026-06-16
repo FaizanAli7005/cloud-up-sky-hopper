@@ -1,6 +1,6 @@
 # Cloud Up: Sky Hopper
 
-Cloud Up is a 2D endless vertical arcade game based on the Sky Hopper proposal. The player controls a propeller cloud rising through an endless sky, dodging birds, thunderstorms, windmills, and balloons while collecting stars and boost bonuses.
+Cloud Up is a 2D endless vertical arcade game based on the Sky Hopper proposal. The player controls a propeller cloud rising through an endless sky, dodging birds, thunderstorms, and balloons while collecting stars and boost bonuses.
 
 ## Tech Stack
 
@@ -39,7 +39,7 @@ Cloud Up is a 2D endless vertical arcade game based on the Sky Hopper proposal. 
 ## How To Maximize Score
 
 - Stay alive as long as possible to keep earning altitude score.
-- Collect stars to build combo points.
+- Collect stars to build timed combo points.
 - Grab teal boost gems when safe; they give a larger bonus and increase the combo faster.
 - Do not chase collectibles through hazards. Survival is worth more than a risky star.
 - Keep the cloud near the upper-middle of the sky so there is time to dodge falling hazards.
@@ -96,4 +96,4 @@ npm run backtest
 npm audit
 ```
 
-The backtest suite runs deterministic long-form simulations across multiple seeds, verifies failure when the player does nothing, checks the difficulty cap, and proves seeded randomness is reproducible.
+The backtest suite runs deterministic long-form simulations across multiple seeds, verifies failure when the player does nothing, checks collision and bonus behavior, checks the difficulty cap, and proves seeded randomness is reproducible.

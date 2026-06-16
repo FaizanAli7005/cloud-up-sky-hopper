@@ -20,6 +20,7 @@ export class GameScene extends Phaser.Scene {
   private highScoreText!: Phaser.GameObjects.Text;
   private statusText!: Phaser.GameObjects.Text;
   private speedText!: Phaser.GameObjects.Text;
+  private comboText!: Phaser.GameObjects.Text;
   private overlay!: Phaser.GameObjects.Container;
   private overlayTitle!: Phaser.GameObjects.Text;
   private overlayAction!: Phaser.GameObjects.Text;
@@ -220,6 +221,12 @@ export class GameScene extends Phaser.Scene {
       fontSize: "16px",
       color: "#29465e"
     });
+    this.comboText = this.add.text(28, 106, "", {
+      ...textStyle,
+      fontSize: "16px",
+      fontStyle: "700",
+      color: "#087f73"
+    });
     this.statusText = this.add
       .text(640, 44, "CLOUD UP", {
         ...textStyle,
@@ -319,7 +326,7 @@ export class GameScene extends Phaser.Scene {
       this.overlayTitle.setText("HOW TO PLAY");
       this.overlayHelpText.setVisible(true);
       this.overlayHelpText.setText(
-        "Goal: keep the propeller cloud airborne and survive as long as possible.\n\nControls: hold Space, Up, W, or touch to rise. Use Left/Right or A/D to steer. Press P to pause, R to restart, H for help.\n\nAvoid birds, storm clouds, windmills, balloons, and the storm floor.\n\nScore: survive for altitude points, collect stars for combo points, and grab teal boost gems for bigger bonus chains."
+        "Goal: keep the propeller cloud airborne and survive as long as possible.\n\nControls: hold Space, Up, W, or touch to rise. Use Left/Right or A/D to steer. Press P to pause, R to restart, H for help.\n\nAvoid birds, storm clouds, balloons, and the storm floor.\n\nScore: survive for altitude points, collect stars to build a timed combo, and grab teal boost gems for bigger bonus chains."
       );
       this.overlayAction.setText("CLOSE");
       return;
@@ -356,6 +363,9 @@ export class GameScene extends Phaser.Scene {
     this.scoreText.setText(`Score ${snapshot.score}`);
     this.highScoreText.setText(`Best ${snapshot.highScore}`);
     this.speedText.setText(`Altitude ${Math.round(snapshot.elapsedSeconds * 10)}m`);
+    this.comboText.setText(
+      snapshot.currentCombo > 0 ? `Combo x${snapshot.currentCombo}  ${Math.ceil(snapshot.bonusTimeRemaining)}s` : ""
+    );
     this.statusText.setText(snapshot.isGameOver ? "GAME OVER" : "CLOUD UP");
     if (snapshot.isGameOver && this.runState !== "gameOver") {
       this.audio.playCrash();
@@ -420,8 +430,6 @@ export class GameScene extends Phaser.Scene {
     switch (obstacle.type) {
       case "bird":
         return this.createBirdSprite();
-      case "windmill":
-        return this.createWindmillSprite();
       case "balloon":
         return this.createBalloonSprite();
       case "storm":
@@ -434,8 +442,6 @@ export class GameScene extends Phaser.Scene {
     switch (obstacle.type) {
       case "bird":
         return obstacle.width / 120;
-      case "windmill":
-        return obstacle.height / 142;
       case "balloon":
         return obstacle.height / 108;
       case "storm":
@@ -466,27 +472,6 @@ export class GameScene extends Phaser.Scene {
     sprite.add(this.add.triangle(12, 40, 0, 8, 22, 8, 8, 42, 0xffee83).setAlpha(0.92));
     sprite.add(this.add.circle(-26, 30, 3, 0x87c9ff).setAlpha(0.9));
     sprite.add(this.add.circle(30, 31, 3, 0x87c9ff).setAlpha(0.9));
-    return sprite;
-  }
-
-  private createWindmillSprite(): Phaser.GameObjects.Container {
-    const sprite = this.add.container(0, 0);
-    sprite.add(this.add.rectangle(0, 24, 16, 68, 0x8d735f).setStrokeStyle(2, 0x514132));
-    sprite.add(this.add.rectangle(0, 61, 34, 12, 0x6d513d).setStrokeStyle(2, 0x514132));
-    sprite.add(this.add.ellipse(0, -18, 42, 24, 0x52667f).setStrokeStyle(2, 0x25384e));
-
-    const blades = this.add.container(0, -18);
-    for (const angle of [0, 90, 180, 270]) {
-      const blade = this.add.container(0, 0);
-      blade.rotation = Phaser.Math.DegToRad(angle);
-      blade.add(this.add.rectangle(0, -31, 12, 54, 0xf8fbff).setStrokeStyle(2, 0x43627b));
-      blade.add(this.add.triangle(0, -64, -12, -38, 12, -38, 0, -68, 0xf8fbff).setStrokeStyle(2, 0x43627b));
-      blades.add(blade);
-    }
-
-    sprite.add(blades);
-    sprite.add(this.add.circle(0, -18, 11, 0x24384d).setStrokeStyle(2, 0xc9d6df));
-    sprite.add(this.add.circle(0, -18, 5, 0xffd166));
     return sprite;
   }
 

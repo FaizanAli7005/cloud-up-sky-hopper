@@ -41,7 +41,6 @@ export class SkyHopperSpawnDirector implements SpawnDirector {
     const variant = this.random.pick([
       { type: "bird" as const, width: 78, height: 46 },
       { type: "storm" as const, width: 84, height: 74 },
-      { type: "windmill" as const, width: 68, height: 92 },
       { type: "balloon" as const, width: 58, height: 88 }
     ]);
 

@@ -1,5 +1,5 @@
 export type EntityKind = "player" | "obstacle" | "collectible";
-export type ObstacleType = "bird" | "storm" | "windmill" | "balloon";
+export type ObstacleType = "bird" | "storm" | "balloon";
 export type CollectibleType = "star" | "boost";
 
 export interface Vector2 {
@@ -38,7 +38,9 @@ export interface GameSnapshot {
   collectibles: CollectibleSnapshot[];
   score: number;
   highScore: number;
+  currentCombo: number;
   bestCombo: number;
+  bonusTimeRemaining: number;
   speed: number;
   elapsedSeconds: number;
   isGameOver: boolean;
