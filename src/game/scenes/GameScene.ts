@@ -167,16 +167,17 @@ export class GameScene extends Phaser.Scene {
       this.backgroundClouds.push(this.drawCloud(cloud.x, cloud.y, cloud.s, 0xffffff, cloud.a));
     }
 
-    this.add.rectangle(480, 500, 960, 80, 0x2a4f78).setAlpha(0.76);
-    this.add.rectangle(480, 486, 960, 12, 0xffd166).setAlpha(0.9);
-    this.add.text(480, 514, "STORM FLOOR - DO NOT FALL", {
-      fontFamily: "Inter, system-ui, sans-serif",
-      fontSize: "18px",
-      fontStyle: "800",
-      color: "#ffffff"
-    }).setOrigin(0.5);
-    for (const x of [80, 220, 360, 500, 640, 780, 920]) {
-      this.add.triangle(x, 530, -18, 14, 18, 14, 0, -24, 0xffd54f).setAlpha(0.72);
+    this.add.rectangle(480, 500, 960, 80, 0x355f86).setAlpha(0.68);
+    this.add.rectangle(480, 484, 960, 8, 0x203a56).setAlpha(0.42);
+    for (const wave of [
+      { x: 80, y: 507, s: 1.0 },
+      { x: 220, y: 526, s: 0.8 },
+      { x: 380, y: 512, s: 1.1 },
+      { x: 560, y: 528, s: 0.9 },
+      { x: 740, y: 508, s: 1.0 },
+      { x: 900, y: 524, s: 0.85 }
+    ]) {
+      this.drawCloud(wave.x, wave.y, wave.s, 0x203a56, 0.2);
     }
   }
 
@@ -240,27 +241,29 @@ export class GameScene extends Phaser.Scene {
 
   private createOverlay(): void {
     this.overlay = this.add.container(480, 270);
-    this.overlay.add(this.add.rectangle(0, 0, 520, 340, 0xf7fbff, 0.94).setStrokeStyle(1, 0x86bdd8, 0.8));
+    this.overlay.setDepth(1000);
+    this.overlay.add(this.add.rectangle(0, 0, 560, 330, 0xf7fbff, 0.96).setStrokeStyle(1, 0x86bdd8, 0.72));
     this.overlayTitle = this.add
       .text(0, -118, "CLOUD UP", {
         fontFamily: "Inter, system-ui, sans-serif",
-        fontSize: "28px",
+        fontSize: "27px",
         fontStyle: "800",
         color: "#102033",
         align: "center"
       })
       .setOrigin(0.5);
     this.overlayHelpText = this.add
-      .text(0, -46, "", {
+      .text(0, -24, "", {
         fontFamily: "Inter, system-ui, sans-serif",
-        fontSize: "16px",
+        fontSize: "14px",
         color: "#20384d",
         align: "center",
-        wordWrap: { width: 440, useAdvancedWrap: true }
+        lineSpacing: 5,
+        wordWrap: { width: 470, useAdvancedWrap: true }
       })
       .setOrigin(0.5);
     this.overlayAction = this.add
-      .text(0, 114, "START", {
+      .text(0, 116, "START", {
         fontFamily: "Inter, system-ui, sans-serif",
         fontSize: "18px",
         fontStyle: "700",
@@ -312,7 +315,7 @@ export class GameScene extends Phaser.Scene {
       this.overlayTitle.setText("HOW TO PLAY");
       this.overlayHelpText.setVisible(true);
       this.overlayHelpText.setText(
-        "Goal: keep the propeller cloud airborne and survive as long as possible.\n\nControls: Hold Up, W, Space, or touch to rise. Use Left/Right or A/D to steer. Press P to pause, R to restart, H for help.\n\nAvoid: birds, thunderclouds, windmills, balloons, and the storm floor.\n\nScore: survive for altitude points, collect stars for combo points, and grab teal boost gems for bigger bonus chains."
+        "Goal: keep the propeller cloud airborne and survive as long as possible.\n\nControls: hold Space, Up, W, or touch to rise. Use Left/Right or A/D to steer. Press P to pause, R to restart, H for help.\n\nAvoid birds, storm clouds, windmills, balloons, and the storm floor.\n\nScore: survive for altitude points, collect stars for combo points, and grab teal boost gems for bigger bonus chains."
       );
       this.overlayAction.setText("CLOSE");
       return;
@@ -320,7 +323,7 @@ export class GameScene extends Phaser.Scene {
 
     this.overlayTitle.setText("CLOUD UP");
     this.overlayHelpText.setVisible(true);
-    this.overlayHelpText.setText("Stay above the storm floor, dodge sky hazards, and collect stars.");
+    this.overlayHelpText.setText("Stay airborne, dodge sky hazards, and collect stars.");
     this.overlayAction.setText("START");
   }
 
@@ -425,22 +428,22 @@ export class GameScene extends Phaser.Scene {
 
   private createBirdSprite(): Phaser.GameObjects.Container {
     const sprite = this.add.container(0, 0);
-    sprite.add(this.add.ellipse(0, 2, 44, 24, 0x26384f).setStrokeStyle(2, 0xfff2a6));
-    sprite.add(this.add.triangle(-18, 0, -18, 0, -52, -22, -38, 14, 0x55708c));
-    sprite.add(this.add.triangle(18, 0, 18, 0, 52, -22, 38, 14, 0x55708c));
-    sprite.add(this.add.triangle(28, -2, 28, -8, 46, -2, 28, 5, 0xffd166));
-    sprite.add(this.add.circle(18, -4, 4, 0xf7fbff));
-    sprite.add(this.add.text(0, 28, "BIRD", { fontSize: "11px", color: "#102033", fontStyle: "800" }).setOrigin(0.5));
+    sprite.add(this.add.ellipse(4, 2, 42, 22, 0x26384f));
+    sprite.add(this.add.triangle(-14, 2, -12, 0, -54, -24, -36, 16, 0x6f86a2));
+    sprite.add(this.add.triangle(20, 2, 18, 0, 58, -20, 38, 16, 0x6f86a2));
+    sprite.add(this.add.triangle(29, -2, 29, -8, 48, -2, 29, 5, 0xffd166));
+    sprite.add(this.add.circle(17, -5, 4, 0xf7fbff));
+    sprite.add(this.add.circle(18, -5, 2, 0x102033));
     return sprite;
   }
 
   private createStormSprite(): Phaser.GameObjects.Container {
     const sprite = this.add.container(0, 0);
-    sprite.add(this.add.ellipse(-8, -8, 56, 38, 0x26384f).setStrokeStyle(2, 0xffd166));
-    sprite.add(this.add.ellipse(16, -2, 48, 36, 0x5c6f8c));
-    sprite.add(this.add.rectangle(0, 15, 66, 24, 0x35485f));
-    sprite.add(this.add.triangle(0, 42, -12, 4, 11, 4, -4, 44, 0xffd54f));
-    sprite.add(this.add.text(0, 32, "STORM", { fontSize: "11px", color: "#102033", fontStyle: "800" }).setOrigin(0.5));
+    sprite.add(this.add.ellipse(-12, -7, 54, 36, 0x26384f));
+    sprite.add(this.add.ellipse(16, -4, 50, 36, 0x596a86));
+    sprite.add(this.add.ellipse(2, 9, 70, 30, 0x35485f));
+    sprite.add(this.add.triangle(-8, 43, -18, 8, 6, 8, -8, 43, 0xffd54f));
+    sprite.add(this.add.triangle(10, 34, 0, 8, 18, 8, 6, 36, 0xffee83).setAlpha(0.9));
     return sprite;
   }
 
@@ -451,7 +454,6 @@ export class GameScene extends Phaser.Scene {
     sprite.add(this.add.triangle(0, -8, 0, -8, -48, -20, -12, 0, 0xf7fbff).setStrokeStyle(1, 0x31566b));
     sprite.add(this.add.triangle(0, -8, 0, -8, 48, -20, 12, 0, 0xf7fbff).setStrokeStyle(1, 0x31566b));
     sprite.add(this.add.triangle(0, -8, 0, -8, -10, 38, 10, 8, 0xf7fbff).setStrokeStyle(1, 0x31566b));
-    sprite.add(this.add.text(0, 58, "WINDMILL", { fontSize: "10px", color: "#102033", fontStyle: "800" }).setOrigin(0.5));
     return sprite;
   }
 
@@ -462,7 +464,6 @@ export class GameScene extends Phaser.Scene {
     sprite.add(this.add.line(0, 16, -12, 0, -4, 36, 0x3a5368).setLineWidth(2));
     sprite.add(this.add.line(0, 16, 12, 0, 4, 36, 0x3a5368).setLineWidth(2));
     sprite.add(this.add.rectangle(0, 36, 20, 14, 0xb98b4f).setStrokeStyle(1, 0x6d4a2d));
-    sprite.add(this.add.text(0, 56, "BALLOON", { fontSize: "10px", color: "#102033", fontStyle: "800" }).setOrigin(0.5));
     return sprite;
   }
 
