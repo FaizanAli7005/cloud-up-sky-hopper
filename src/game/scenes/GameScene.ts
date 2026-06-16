@@ -435,7 +435,7 @@ export class GameScene extends Phaser.Scene {
       case "bird":
         return obstacle.width / 120;
       case "windmill":
-        return obstacle.height / 132;
+        return obstacle.height / 142;
       case "balloon":
         return obstacle.height / 108;
       case "storm":
@@ -471,13 +471,22 @@ export class GameScene extends Phaser.Scene {
 
   private createWindmillSprite(): Phaser.GameObjects.Container {
     const sprite = this.add.container(0, 0);
-    sprite.add(this.add.rectangle(0, 24, 14, 62, 0x8e725e).setStrokeStyle(2, 0x533f35));
-    sprite.add(this.add.rectangle(0, 58, 26, 10, 0x6d4a2d));
-    sprite.add(this.add.circle(0, -12, 10, 0x31566b));
-    sprite.add(this.add.triangle(0, -12, -4, -15, -58, -28, -16, -4, 0xf7fbff).setStrokeStyle(1, 0x31566b));
-    sprite.add(this.add.triangle(0, -12, 4, -15, 58, -28, 16, -4, 0xf7fbff).setStrokeStyle(1, 0x31566b));
-    sprite.add(this.add.triangle(0, -12, -4, -8, -14, 44, 10, 8, 0xf7fbff).setStrokeStyle(1, 0x31566b));
-    sprite.add(this.add.triangle(0, -12, 4, -8, 14, -68, -10, -32, 0xf7fbff).setStrokeStyle(1, 0x31566b));
+    sprite.add(this.add.rectangle(0, 24, 16, 68, 0x8d735f).setStrokeStyle(2, 0x514132));
+    sprite.add(this.add.rectangle(0, 61, 34, 12, 0x6d513d).setStrokeStyle(2, 0x514132));
+    sprite.add(this.add.ellipse(0, -18, 42, 24, 0x52667f).setStrokeStyle(2, 0x25384e));
+
+    const blades = this.add.container(0, -18);
+    for (const angle of [0, 90, 180, 270]) {
+      const blade = this.add.container(0, 0);
+      blade.rotation = Phaser.Math.DegToRad(angle);
+      blade.add(this.add.rectangle(0, -31, 12, 54, 0xf8fbff).setStrokeStyle(2, 0x43627b));
+      blade.add(this.add.triangle(0, -64, -12, -38, 12, -38, 0, -68, 0xf8fbff).setStrokeStyle(2, 0x43627b));
+      blades.add(blade);
+    }
+
+    sprite.add(blades);
+    sprite.add(this.add.circle(0, -18, 11, 0x24384d).setStrokeStyle(2, 0xc9d6df));
+    sprite.add(this.add.circle(0, -18, 5, 0xffd166));
     return sprite;
   }
 
