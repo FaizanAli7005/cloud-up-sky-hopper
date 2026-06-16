@@ -29,6 +29,7 @@ export class GameScene extends Phaser.Scene {
   private keyA!: Phaser.Input.Keyboard.Key;
   private keyD!: Phaser.Input.Keyboard.Key;
   private keyW!: Phaser.Input.Keyboard.Key;
+  private keySpace!: Phaser.Input.Keyboard.Key;
   private pointerBoostHeld = false;
   private runState: RunState = "ready";
   private lastScore = 0;
@@ -67,7 +68,7 @@ export class GameScene extends Phaser.Scene {
       boostHeld:
         this.pointerBoostHeld ||
         Boolean(this.cursors.up?.isDown) ||
-        Boolean(this.cursors.space?.isDown) ||
+        this.keySpace.isDown ||
         this.keyW.isDown
     });
 
@@ -90,6 +91,7 @@ export class GameScene extends Phaser.Scene {
     this.keyA = this.input.keyboard!.addKey("A");
     this.keyD = this.input.keyboard!.addKey("D");
     this.keyW = this.input.keyboard!.addKey("W");
+    this.keySpace = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     this.input.keyboard!.on("keydown-P", () => {
       if (this.runState === "help") {
